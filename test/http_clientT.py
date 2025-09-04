@@ -5,4 +5,4 @@ if fp_root not in sys.path:
 
 from utils.http_client import http_client
 
-resp = http_client.get('https://hexo.limour.top/')
+resp = http_client.get('https://fapi.binance.com/fapi/v1/time')

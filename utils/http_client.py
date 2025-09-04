@@ -2,7 +2,7 @@ from utils.logger import logger
 import os
 import urllib.request
 import urllib.error
-
+import urllib.parse
 # ==================== 配置代理 ====================
 
 proxy = os.getenv('PROXY', '').strip()
@@ -52,6 +52,15 @@ class HttpClient:
         timeout = kwargs.get("timeout", self.timeout)
         headers = kwargs.get("headers", {})
         data = kwargs.get("data", None)
+        params = kwargs.get("params", None)  # 新增
+
+        if params:
+            if isinstance(params, dict):
+                query_str = urllib.parse.urlencode(params)
+            else:
+                query_str = str(params)
+            # 如果 URL 已经有 ?，追加 &，否则加 ?
+            url += ("&" if "?" in url else "?") + query_str
 
         # 如果是 dict，转成 bytes
         if isinstance(data, dict):
