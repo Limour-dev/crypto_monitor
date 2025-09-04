@@ -61,16 +61,19 @@ class KLineDB:
         """)
         self.conn.commit()
 
-    def insert(self, bar):
+    def insert(self, bar, commit=True):
         """插入一条 K 线（不会更新已有数据，失败抛异常）"""
         try:
             self.conn.execute(
                 "INSERT INTO kline (ts, open, high, low, close, volume, taker, trades) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 (bar.ts, bar.o, bar.h, bar.l, bar.c, bar.v, bar.taker, bar.trades)
             )
-            self.conn.commit()
+            if commit: self.conn.commit()
         except sqlite3.IntegrityError:
             pass  # 已存在相同 ts 就忽略（因为规则是无删改）
+
+    def commit(self):
+        self.conn.commit()
 
     def query_range(self, ts_start: int, ts_end: int) -> List[Kline]:
         """按时间范围查询"""
