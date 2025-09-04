@@ -12,3 +12,6 @@ def get_klines(pair: str,  interval: str = '1m', limit: int = 500,
     if end_time:
         params["endTime"] = end_time
     return http_client.get(Future.CONTINUOUS_KLINE, params=params)
+
+def get_time():
+    return http_client.get('https://fapi.binance.com/fapi/v1/time')['serverTime']

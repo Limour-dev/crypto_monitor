@@ -3,8 +3,9 @@ fp_root = os.path.dirname(os.path.dirname(__file__))
 if fp_root not in sys.path:
     sys.path.append(fp_root)
 
-from exchange.binance.market.future.kline import get_klines
+from exchange.binance.market.future.kline import get_klines, get_time
 
+now = get_time()
 tmp = get_klines('ETHUSDT')
 
 '''
@@ -25,3 +26,13 @@ tmp = get_klines('ETHUSDT')
   ]
 ]
 '''
+
+from utils.logger import fp_p
+from utils.ohlcvDB import KLineDB, binance_p
+kdb = KLineDB(fp_p('data', 'ETHUSDT', 'P.db'))
+
+# for bar in tmp:
+#     if bar[6] - now > 0: # 不完整的k线
+#         continue
+#     k = binance_p(bar)
+#     kdb.insert(k)
