@@ -98,3 +98,64 @@ class KLineDB:
             (limit,)
         )
         return cur_p(cur.fetchall())
+
+    def latest_1h(self, limit: int = 1) -> List[Kline]:
+        ts_end = self.latest()[0].ts // 1000 // 3600 * 3600 * 1000 - 1
+        ts_start = ts_end - 3600 * 1000 * limit
+        return convert_1m_to_1h(self.query_range(ts_start, ts_end))
+
+def convert_1m_to_1h(bars_1m: List[Kline]) -> List[Kline]:
+    if not bars_1m:
+        return []
+
+    # 按时间排序
+    bars_1m.sort(key=lambda x: x.ts)
+
+    result = []
+
+    # 找到第一个整点时间
+    first_ts = bars_1m[0].ts
+    # 毫秒转小时整点
+    first_hour_ts = first_ts - (first_ts % (3600 * 1000))
+    # 如果第一个bar的时间不是整点，跳到下一个整点
+    if first_ts != first_hour_ts:
+        first_hour_ts += 3600 * 1000
+
+    hour_ms = 3600 * 1000
+
+    # 初始化指针
+    i = 0
+    n = len(bars_1m)
+
+    # 跳过第一个整点前的数据
+    while i < n and bars_1m[i].ts < first_hour_ts:
+        i += 1
+
+    while i < n:
+        hour_start_ts = bars_1m[i].ts
+        # 对齐到整点
+        hour_start_ts = hour_start_ts - (hour_start_ts % hour_ms)
+
+        hour_end_ts = hour_start_ts + hour_ms
+
+        # 如果数据不足一小时则舍弃
+        if bars_1m[-1].ts < hour_end_ts - 60_000:  # 最后一根分钟K时间 < 该小时最后一分钟
+            break
+
+        # 收集该小时内的分钟K
+        hour_bars = []
+        while i < n and bars_1m[i].ts < hour_end_ts:
+            hour_bars.append(bars_1m[i])
+            i += 1
+
+        o = hour_bars[0].o
+        h = max(b.h for b in hour_bars)
+        l = min(b.l for b in hour_bars)
+        c = hour_bars[-1].c
+        v = sum(b.v for b in hour_bars)
+        taker = sum(b.taker for b in hour_bars)
+        trades = sum(b.trades for b in hour_bars)
+
+        result.append(Kline(hour_start_ts, o, h, l, c, v, taker, trades))
+
+    return result
