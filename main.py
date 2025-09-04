@@ -2,6 +2,7 @@ from utils.logger import fp_p, logger
 from notify.wechat_bot import wechat_push
 from exchange.binance.market.future.kline import get_klines, get_time
 from utils.ohlcvDB import KLineDB, ft2ts, binance_p
+import time
 
 symbols = {
     'ETHUSDT': KLineDB(fp_p('data', 'ETHUSDT', 'P.db')),
@@ -43,3 +44,28 @@ def _update_db():
             res[symbol] = db.latest()[0]
         db.commit()
     return res
+
+from strategy.ETHUSDT import p_bar as eth_p_bar
+_p_bars = {
+    'ETHUSDT': eth_p_bar
+}
+
+def p_bar(bars):
+    for symbol, bar in bars.items():
+        _p_bar = _p_bars.get(symbol, None)
+        if _p_bar:
+            _p_bar(bar, symbols)
+
+def main():
+    interval = 5  # 秒
+    while True:
+        now = time.time()
+        # 向上取整到下一个整点
+        next_tick = (now // interval + 1) * interval
+        time.sleep(next_tick - now)
+        # print(time.strftime("%Y-%m-%d %H:%M:%S"), "执行任务")
+        try:
+            p_bar(_update_db())
+        except Exception as e:
+            logger.error(e)
+main()
