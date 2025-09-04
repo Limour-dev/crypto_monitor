@@ -90,3 +90,11 @@ class KLineDB:
             (limit,)
         )
         return cur_p(cur.fetchall())
+
+    def earliest(self, limit: int = 1) -> List[Kline]:
+        """获取最早的 N 条 K线"""
+        cur = self.conn.execute(
+            "SELECT ts, open, high, low, close, volume, taker, trades FROM kline ORDER BY ts ASC LIMIT ?",
+            (limit,)
+        )
+        return cur_p(cur.fetchall())

@@ -63,7 +63,7 @@ def main():
         # 向上取整到下一个整点
         next_tick = (now // interval + 1) * interval
         time.sleep(next_tick - now)
-        # print(time.strftime("%Y-%m-%d %H:%M:%S"), "执行任务")
+        print(time.strftime("%Y-%m-%d %H:%M:%S"), "执行任务")
         try:
             p_bar(_update_db())
         except Exception as e:
