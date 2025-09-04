@@ -46,8 +46,12 @@ def _update_db():
     return res
 
 from strategy.ETHUSDT import p_bar as eth_p_bar
+from strategy.BTCUSDT import p_bar as btc_p_bar
+from strategy.SOLUSDT import p_bar as sol_p_bar
 _p_bars = {
-    'ETHUSDT': eth_p_bar
+    'ETHUSDT': eth_p_bar,
+    'BTCUSDT': btc_p_bar,
+    'SOLUSDT': sol_p_bar
 }
 
 def p_bar(bars):

@@ -44,3 +44,13 @@ def ta_stdev(src):
     # 样本标准差 (除以 n-1)
     variance = sum((x - mean) ** 2 for x in src) / (len(src) - 1)
     return math.sqrt(variance)
+
+def buy_vs_sell_v(bar):
+    return (bar.taker * 2 - bar.v) / bar.v * 100
+def buy_vs_sell_p(bar):
+    return (bar.c - bar.o) / bar.c * 1000
+def buy_vs_sell(bars):
+    res = f'{buy_vs_sell_p(bars[-3]):.2f}\t{buy_vs_sell_v(bars[-3]):.2f}\n'
+    res += f'{buy_vs_sell_p(bars[-2]):.2f}\t{buy_vs_sell_v(bars[-2]):.2f}\n'
+    res += f'{buy_vs_sell_p(bars[-1]):.2f}\t{buy_vs_sell_v(bars[-1]):.2f}'
+    return res
