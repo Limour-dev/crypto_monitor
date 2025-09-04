@@ -45,6 +45,7 @@ class KLineDB:
     def __init__(self, db_path: str = "kline.db"):
         self.conn = sqlite3.connect(db_path)
         self._init_table()
+        self.cache_1h = [0, []]
 
     def _init_table(self):
         self.conn.execute("""
@@ -102,7 +103,13 @@ class KLineDB:
     def latest_1h(self, limit: int = 1) -> List[Kline]:
         ts_end = self.latest()[0].ts // 1000 // 3600 * 3600 * 1000 - 1
         ts_start = ts_end - 3600 * 1000 * limit
-        return convert_1m_to_1h(self.query_range(ts_start, ts_end))
+        if self.cache_1h[0] == ts_end:
+            if len(self.cache_1h[1]) >= limit:
+                # print('hit cache')
+                return self.cache_1h[1][-limit:]
+        result = convert_1m_to_1h(self.query_range(ts_start, ts_end))
+        self.cache_1h = [ts_end, result]
+        return result
 
 def convert_1m_to_1h(bars_1m: List[Kline]) -> List[Kline]:
     if not bars_1m:
