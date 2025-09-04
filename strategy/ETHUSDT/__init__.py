@@ -15,7 +15,7 @@ lg = [0, 0]
 
 def p_bar(bar, symbols):
     global key_levels_last_notify, lg_last_c
-    global lg_upper, lg_lower
+    global lg
     bars_1h = symbols['ETHUSDT'].latest_1h(150)
     if bars_1h[-1].ts > lg_last_c:
         lg_last_c = bars_1h[-1].ts
