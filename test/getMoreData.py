@@ -18,6 +18,6 @@ def main(symbol):
         kdb.insert(k, False)
     kdb.commit()
     print(kdb.earliest())
-for i in range(24):
-    main('SOLUSDT')
+for i in range(240):
+    main('ETHUSDT')
     time.sleep(3)
