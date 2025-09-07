@@ -70,22 +70,25 @@ bars = kdb.latest(60 * 24 * 4 + lw)[::-1]
 
 root.title(f"{lw // 60} h 成本价")
 
-t_buy_p = sum(x.c * x.taker for x in bars[:lw])
-t_buy_v = sum(x.taker for x in bars[:lw])
 for bar in bars:
     bar.maker = bar.v - bar.taker
-t_sell_p = sum(x.c * x.maker for x in bars[:lw])
-t_sell_v = sum(x.maker for x in bars[:lw])
+    bar.t_q = bar.taker / bar.c
+    bar.m_q = bar.maker / bar.c
+
+t_buy_p = sum(x.taker for x in bars[:lw])
+t_buy_v = sum(x.t_q for x in bars[:lw])
+t_sell_p = sum(x.maker for x in bars[:lw])
+t_sell_v = sum(x.m_q for x in bars[:lw])
 line_sell = []
 line_buy = []
 for i in range(lw, len(bars)):
     bari = bars[i]
     baro = bars[i-lw]
-    t_buy_p += (bari.c * bari.taker - baro.c*baro.taker)
-    t_buy_v += (bari.taker - baro.taker)
+    t_buy_p += (bari.taker - baro.taker)
+    t_buy_v += (bari.t_q - baro.t_q)
     line_buy.append(t_buy_p / t_buy_v)
-    t_sell_p += (bari.c * bari.maker  - baro.c * baro.maker)
-    t_sell_v += (bari.maker - baro.maker)
+    t_sell_p += (bari.maker  - baro.maker)
+    t_sell_v += (bari.m_q - baro.m_q)
     line_sell.append(t_sell_p / t_sell_v)
 
 line_sell = line_sell[::-period][::-1]
