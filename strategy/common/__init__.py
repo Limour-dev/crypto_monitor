@@ -54,3 +54,45 @@ def buy_vs_sell(bars):
     res += f'{buy_vs_sell_p(bars[-2]):.2f}\t{buy_vs_sell_v(bars[-2]):.2f}\n'
     res += f'{buy_vs_sell_p(bars[-1]):.2f}\t{buy_vs_sell_v(bars[-1]):.2f}'
     return res
+
+def ema(prices, period):
+    """
+    计算EMA
+    prices: list[float]
+    period: int
+    """
+    ema_values = []
+    k = 2 / (period + 1)
+    ema_prev = prices[0]  # 第一个EMA起始点可设为首个收盘价
+    ema_values.append(ema_prev)
+
+    for price in prices[1:]:
+        ema_prev = price * k + ema_prev * (1 - k)
+        ema_values.append(ema_prev)
+
+    return ema_values
+
+def sma(prices, period):
+    """
+    计算简单移动平均 SMA
+    """
+    wd = sum(prices[:period])
+    sma_values = [wd / period]
+    for i in range(0, len(prices) - period):
+        wd += (prices[i+period] - prices[i])
+        sma_values.append(wd / period)
+    return sma_values
+
+def macd(prices, fastperiod=12, slowperiod=26):
+    """
+    纯 Python 实现MACD
+    prices: list[float] 收盘价数组
+    """
+
+    ema_fast = ema(prices, fastperiod)
+    ema_slow = ema(prices, slowperiod)
+
+    # 计算 DIF
+    dif = [f - s for f, s in zip(ema_fast, ema_slow)]
+
+    return dif

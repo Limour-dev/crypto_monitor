@@ -66,7 +66,7 @@ kdb = KLineDB(fp_p('data', 'ETHUSDT', 'P.db'))
 period = 1
 x_it = max(60 // period, 1)
 lw = 30
-bars = kdb.latest(60 * 4 + lw)[::-1]
+bars = kdb.latest(60 * 12 + lw)[::-1]
 
 root.title(f"买卖量比例")
 
