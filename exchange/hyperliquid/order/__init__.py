@@ -4,6 +4,7 @@ from utils.http_client import http_client
 import eth_account
 from hyperliquid.utils.types import *
 from hyperliquid.utils.signing import *
+import math
 
 account = eth_account.Account.from_key(os.environ.get('HYPE_KEY'))
 address = os.environ.get('HYPE_USR')
@@ -59,9 +60,26 @@ def order(
         'signature': signature
     }
 
-    print(data)
-
     res = http_client.post(url, data=data)
 
     return res
 
+min_val = 15
+
+def buy_min(name: str, px: float):
+    return order(
+        name = name,
+        is_buy = True,
+        sz = math.ceil(min_val / px * 10000) / 10000,
+        limit_px = px,
+        order_type = ORDER_ALO
+    )
+
+def sell_min(name: str, px: float):
+    return order(
+        name = name,
+        is_buy = False,
+        sz = math.ceil(min_val / px * 10000) / 10000,
+        limit_px = px,
+        order_type = ORDER_ALO
+    )

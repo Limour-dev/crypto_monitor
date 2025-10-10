@@ -26,8 +26,8 @@ def l2Book(coin):
         'coin': coin
     })
     levels = res.get('levels', [[], []])
-    bid = levels[1]
-    ask = levels[0]
-    bid.sort(key=lambda x:x['n'])
-    ask.sort(key=lambda x:x['n'])
+    bid = [(float(x['px']), float(x['sz'])) for x in levels[1]]
+    ask = [(float(x['px']), float(x['sz'])) for x in levels[0]]
+    bid.sort(key=lambda x:x[0])
+    ask.sort(key=lambda x:x[0], reverse=True)
     return ask, bid

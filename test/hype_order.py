@@ -1,17 +1,14 @@
-import sys, os
+import sys, os, time
 fp_root = os.path.dirname(os.path.dirname(__file__))
 if fp_root not in sys.path:
     sys.path.append(fp_root)
 
-from exchange.hyperliquid.order import order, ORDER_ALO
-
-res = order(
-    'ETH',
-    False,
-    0.01,
-    4800,
-    ORDER_ALO
-)
+from exchange.hyperliquid.order import sell_min, buy_min
+from exchange.hyperliquid.info import l2Book
+for i in range(10):
+    ask, bid = l2Book('ETH')
+    res = sell_min('ETH', bid[-1][0] + 100)
+    time.sleep(60)
 
 if False:
     from exchange.hyperliquid.order import account, address
