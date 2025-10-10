@@ -3,11 +3,21 @@ fp_root = os.path.dirname(os.path.dirname(__file__))
 if fp_root not in sys.path:
     sys.path.append(fp_root)
 
-from exchange.hyperliquid.order import sell_min, buy_min
+from exchange.hyperliquid.order import sell_min, buy_min, schedule_cancel
 from exchange.hyperliquid.info import l2Book
-for i in range(10):
+all = 0
+while True:
     ask, bid = l2Book('ETH')
-    res = sell_min('ETH', bid[-1][0] + 100)
+    if bid[-1][0] < 4340:
+        time.sleep(30)
+        continue
+    res = sell_min('ETH', bid[-1][0])
+    all += 1
+    print(all, res)
+    res = schedule_cancel(30 * 1000)
+    print(res)
+    if all > 30:
+        break
     time.sleep(60)
 
 if False:

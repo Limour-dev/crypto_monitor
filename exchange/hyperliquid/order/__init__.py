@@ -83,3 +83,37 @@ def sell_min(name: str, px: float):
         limit_px = px,
         order_type = ORDER_ALO
     )
+
+
+def schedule_cancel(delta_time: int) -> Any:
+    """Schedules a time (in UTC millis) to cancel all open orders. The time must be at least 5 seconds after the current time.
+    Once the time comes, all open orders will be canceled and a trigger count will be incremented. The max number of triggers
+    per day is 10. This trigger count is reset at 00:00 UTC.
+
+    Args:
+        time (int): if time is not None, then set the cancel time in the future. If None, then unsets any cancel time in the future.
+    """
+    timestamp = get_timestamp_ms()
+    schedule_cancel_action = {
+        "type": "scheduleCancel",
+        "time": timestamp + delta_time
+    }
+
+    signature = sign_l1_action(
+        account,
+        schedule_cancel_action,
+        None,
+        timestamp,
+        None,
+        True
+    )
+
+    data =  {
+        'action': schedule_cancel_action,
+        'nonce': timestamp,
+        'signature': signature
+    }
+
+    res = http_client.post(url, data=data)
+
+    return res
