@@ -29,7 +29,7 @@ while False:
 while True:
     try:
         ask, bid = l2Book('BTC')
-        if ask[0][0] > 119300:
+        if ask[0][0] > 117600:
             print('skip', ask[0][0])
             time.sleep(random.randint(20, 30))
             continue
