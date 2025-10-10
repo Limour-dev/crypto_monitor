@@ -67,19 +67,23 @@ def order(
 min_val = 15
 
 def buy_min(name: str, px: float):
+    if px > 100000:
+        px = int(px)
     return order(
         name = name,
         is_buy = True,
-        sz = math.ceil(min_val / px * 10000) / 10000,
+        sz = math.ceil(min_val / px * 100000) / 100000,
         limit_px = px,
         order_type = ORDER_ALO
     )
 
 def sell_min(name: str, px: float):
+    if px > 100000:
+        px = int(px)
     return order(
         name = name,
         is_buy = False,
-        sz = math.ceil(min_val / px * 10000) / 10000,
+        sz = math.ceil(min_val / px * 100000) / 100000,
         limit_px = px,
         order_type = ORDER_ALO
     )
