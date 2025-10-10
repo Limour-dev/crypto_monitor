@@ -16,12 +16,13 @@ while True:
             entryPx = float(position['entryPx'])
             positionValue = float(position['positionValue'])
             ask, bid = l2Book(coin)
-            gpx = max(bid, key=lambda x: x[1])[0] * 1.0005
-            if bid[0][0] < entryPx or positionValue < 500:
+            gpx = max(bid, key=lambda x: x[1])[0]
+            if bid[0][0] < entryPx * 1.0005 or positionValue < 500:
                 print('skip', bid[0][0], positionValue, gpx)
                 time.sleep(random.randint(20, 30))
                 continue
             res = sell_min(coin, gpx)
+            print(res)
         time.sleep(random.randint(30, 60))
     except:
         traceback.print_last()

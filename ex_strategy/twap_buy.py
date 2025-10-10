@@ -10,7 +10,11 @@ all = 0
 while True:
     try:
         ask, bid = l2Book('BTC')
-        if ask[0][0] > 117600:
+        if max(bid, key=lambda x: x[1])[0] == bid[0][0]:
+            print('压价，skip', ask[0][0])
+            time.sleep(random.randint(20, 30))
+            continue
+        if ask[0][0] > 116200:
             print('skip', ask[0][0])
             time.sleep(random.randint(20, 30))
             continue
