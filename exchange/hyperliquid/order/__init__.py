@@ -66,7 +66,7 @@ def order(
 
 min_val = 15
 
-def buy_min(name: str, px: float):
+def buy_min(name: str, px: float, reduce_only=False):
     if px > 100000:
         px = int(px)
     return order(
@@ -74,10 +74,11 @@ def buy_min(name: str, px: float):
         is_buy = True,
         sz = math.ceil(min_val / px * 100000) / 100000,
         limit_px = px,
-        order_type = ORDER_ALO
+        order_type = ORDER_ALO,
+        reduce_only=reduce_only
     )
 
-def sell_min(name: str, px: float):
+def sell_min(name: str, px: float, reduce_only=False):
     if px > 100000:
         px = int(px)
     return order(
@@ -85,7 +86,8 @@ def sell_min(name: str, px: float):
         is_buy = False,
         sz = math.ceil(min_val / px * 100000) / 100000,
         limit_px = px,
-        order_type = ORDER_ALO
+        order_type = ORDER_ALO,
+        reduce_only=reduce_only
     )
 
 
