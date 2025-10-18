@@ -49,7 +49,9 @@ print(possible_last_words)
 et = int(input(f'请输入一个 1 到 {len(possible_last_words)} 随机的整数：'))
 mnemonic[-1] = possible_last_words[et % max_ws]
 
-seed_bytes = Bip39SeedGenerator(' '.join(mnemonic)).Generate()
+passphrase = input('请输入一段口令：')
+
+seed_bytes = Bip39SeedGenerator(' '.join(mnemonic)).Generate(passphrase = passphrase)
 bip44_eth_ctx = Bip44.FromSeed(seed_bytes, Bip44Coins.ETHEREUM)
 addr_index0 = (bip44_eth_ctx.Purpose().Coin().
                Account(0). # 用来区分不同账户，方便记账和管理
@@ -61,7 +63,7 @@ print("ETH 地址:", addr_index0.PublicKey().ToAddress())
 print("ETH 私钥(hex):", addr_index0.PrivateKey().Raw().ToHex())
 
 cn_mnemonic = ' '.join((cn_words[english_words_idx[x]]for x in mnemonic))
-seed_bytes = Bip39SeedGenerator(cn_mnemonic, lang=Bip39Languages.CHINESE_SIMPLIFIED).Generate()
+seed_bytes = Bip39SeedGenerator(cn_mnemonic, lang=Bip39Languages.CHINESE_SIMPLIFIED).Generate(passphrase = passphrase)
 bip44_eth_ctx = Bip44.FromSeed(seed_bytes, Bip44Coins.ETHEREUM)
 addr_index0 = (bip44_eth_ctx.Purpose().Coin().
                Account(0). # 用来区分不同账户，方便记账和管理
