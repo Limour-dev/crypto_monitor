@@ -14,7 +14,10 @@ from bip_utils import (
 )
 
 english_words = Bip39WordsListGetter().GetByLanguage(Bip39Languages.ENGLISH)
+english_words_idx = english_words.m_words_to_idx
 english_words = english_words.m_idx_to_words
+cn_words = Bip39WordsListGetter().GetByLanguage(Bip39Languages.CHINESE_SIMPLIFIED)
+cn_words = cn_words.m_idx_to_words
 
 mnemo_g =  Bip39MnemonicGenerator(Bip39Languages.ENGLISH)
 mnemonic = str(mnemo_g.FromWordsNumber(Bip39WordsNum.WORDS_NUM_24)).split(' ')
@@ -54,5 +57,16 @@ addr_index0 = (bip44_eth_ctx.Purpose().Coin().
                AddressIndex(1)) # 用来防止地址重复使用，提高隐私性, 更适合频繁生成新地址的场景
 
 print("ETH 助记词:", ' '.join(mnemonic))
+print("ETH 地址:", addr_index0.PublicKey().ToAddress())
+print("ETH 私钥(hex):", addr_index0.PrivateKey().Raw().ToHex())
+
+cn_mnemonic = ' '.join((cn_words[english_words_idx[x]]for x in mnemonic))
+seed_bytes = Bip39SeedGenerator(cn_mnemonic, lang=Bip39Languages.CHINESE_SIMPLIFIED).Generate()
+bip44_eth_ctx = Bip44.FromSeed(seed_bytes, Bip44Coins.ETHEREUM)
+addr_index0 = (bip44_eth_ctx.Purpose().Coin().
+               Account(0). # 用来区分不同账户，方便记账和管理
+               Change(Bip44Changes.CHAIN_EXT).
+               AddressIndex(1)) # 用来防止地址重复使用，提高隐私性, 更适合频繁生成新地址的场景
+print("ETH 助记词:", cn_mnemonic)
 print("ETH 地址:", addr_index0.PublicKey().ToAddress())
 print("ETH 私钥(hex):", addr_index0.PrivateKey().Raw().ToHex())
