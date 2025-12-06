@@ -17,37 +17,43 @@ english_words = Bip39WordsListGetter().GetByLanguage(Bip39Languages.ENGLISH)
 english_words_idx = english_words.m_words_to_idx
 english_words = english_words.m_idx_to_words
 cn_words = Bip39WordsListGetter().GetByLanguage(Bip39Languages.CHINESE_SIMPLIFIED)
+cn_words_idx = cn_words.m_words_to_idx
 cn_words = cn_words.m_idx_to_words
 
 mnemo_g =  Bip39MnemonicGenerator(Bip39Languages.ENGLISH)
 mnemonic = str(mnemo_g.FromWordsNumber(Bip39WordsNum.WORDS_NUM_24)).split(' ')
 
-max_ws = len(english_words)
-for i in range(0, 24, 2):
-    print(i, mnemonic[i])
-    while True:
+cn_mnemonic = input('请输出中文助记词，留空自动生成：').strip()
+
+if not cn_mnemonic:
+    max_ws = len(english_words)
+    for i in range(0, 24, 2):
+        print(i, mnemonic[i])
+        while True:
+            try:
+                et = int(input(f'请输入一个 1 到 {max_ws} 随机的整数：'))
+                break
+            except:
+                pass
+        print(i, english_words[et % max_ws])
+        mnemonic[i] = english_words[et % max_ws]
+
+    mnemo_v = Bip39MnemonicValidator(Bip39Languages.ENGLISH)
+    tmp_mnemonic = ' '.join(mnemonic[:-1]) + ' '
+    possible_last_words = []
+    for bip39w in english_words:
+        mnemonic_candidate = tmp_mnemonic + bip39w
         try:
-            et = int(input(f'请输入一个 1 到 {max_ws} 随机的整数：'))
-            break
-        except:
+            mnemo_v.Validate(mnemonic_candidate)
+            possible_last_words.append(bip39w)
+        except MnemonicChecksumError:
             pass
-    print(i, english_words[et % max_ws])
-    mnemonic[i] = english_words[et % max_ws]
 
-mnemo_v = Bip39MnemonicValidator(Bip39Languages.ENGLISH)
-tmp_mnemonic = ' '.join(mnemonic[:-1]) + ' '
-possible_last_words = []
-for bip39w in english_words:
-    mnemonic_candidate = tmp_mnemonic + bip39w
-    try:
-        mnemo_v.Validate(mnemonic_candidate)
-        possible_last_words.append(bip39w)
-    except MnemonicChecksumError:
-        pass
-
-print(possible_last_words)
-et = int(input(f'请输入一个 1 到 {len(possible_last_words)} 随机的整数：'))
-mnemonic[-1] = possible_last_words[et % max_ws]
+    print(possible_last_words)
+    et = int(input(f'请输入一个 1 到 {len(possible_last_words)} 随机的整数：'))
+    mnemonic[-1] = possible_last_words[et % max_ws]
+else:
+    mnemonic = [english_words[cn_words_idx[x]] for x in cn_mnemonic.split(' ')]
 
 passphrase = input('请输入一段口令：')
 
