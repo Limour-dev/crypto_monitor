@@ -1,3 +1,4 @@
+from Crypto.SelfTest.Protocol.test_ecdh import private_key
 from bip_utils import (
     Bip39WordsNum,
     Bip39MnemonicGenerator,
@@ -78,3 +79,21 @@ addr_index0 = (bip44_eth_ctx.Purpose().Coin().
 print("ETH 助记词:", cn_mnemonic)
 print("ETH 地址:", addr_index0.PublicKey().ToAddress())
 print("ETH 私钥(hex):", addr_index0.PrivateKey().Raw().ToHex())
+
+from solders.keypair import Keypair
+from solders.pubkey import Pubkey
+import base58
+
+sol_index0 = (Bip44.FromSeed(seed_bytes, Bip44Coins.SOLANA).
+              Purpose().Coin().
+              Account(0). # 用来区分不同账户，方便记账和管理
+              Change(Bip44Changes.CHAIN_EXT).
+              AddressIndex(1)) # 用来防止地址重复使用，提高隐私性, 更适合频繁生成新地址的场景
+
+private_key_bytes = sol_index0.PrivateKey().Raw().ToBytes()
+keypair = Keypair.from_seed(private_key_bytes)
+print("SOL 地址:", str(keypair.pubkey()))
+print("SOL 私钥:", base58.b58encode(keypair.to_bytes()).decode())
+
+pubkey =Pubkey.from_string(str(keypair.pubkey()))
+assert len(str(pubkey)) == 44
